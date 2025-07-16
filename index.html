@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#4CAF50"/>
+  <link rel="manifest" href="manifest.json">
+  <title>Mantra Counter</title>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: #222;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    button {
+      width: 100vw;
+      height: 100vh;
+      font-size: 48px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      transition: background 0.3s;
+    }
+    .flash { background: #FF9800 !important; }
+  </style>
+</head>
+<body>
+  <button id="counterBtn">Count: 0</button>
+
+  <script>
+    let count = localStorage.getItem('mantra_count') || 0;
+    const btn = document.getElementById('counterBtn');
+    btn.textContent = `Count: ${count}`;
+
+    function playBeep() {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(600, ctx.currentTime);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      setTimeout(() => osc.stop(), 150);
+    }
+
+    btn.addEventListener('click', () => {
+      count++;
+      localStorage.setItem('mantra_count', count);
+      btn.textContent = `Count: ${count}`;
+      btn.classList.add('flash');
+      setTimeout(() => btn.classList.remove('flash'), 2000);
+      navigator.vibrate(2000);
+      playBeep();
+    });
+
+    // Register PWA
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
+</body>
+</html>
