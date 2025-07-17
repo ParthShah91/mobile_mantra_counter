@@ -1,3 +1,5 @@
+const CACHE_NAME = 'mantra-cache-v2'; // ✅ You can change version anytime
+
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open('counter-cache').then(cache => {
