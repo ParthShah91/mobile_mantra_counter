@@ -11,28 +11,44 @@
       height: 100%;
       background: #222;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
+      font-family: sans-serif;
     }
-    button {
+    #counterBtn {
       width: 100vw;
-      height: 100vh;
+      height: 80vh;
       font-size: 48px;
       background: #4CAF50;
       color: white;
       border: none;
       transition: background 0.3s;
     }
-    .flash { background: #FF9800 !important; }
+    #resetBtn {
+      width: 100vw;
+      height: 20vh;
+      font-size: 24px;
+      background: #f44336;
+      color: white;
+      border: none;
+    }
+    .flash {
+      background: #FF9800 !important;
+    }
   </style>
 </head>
 <body>
   <button id="counterBtn">Count: 0</button>
+  <button id="resetBtn">Long Press to Reset</button>
 
   <script>
-    let count = localStorage.getItem('mantra_count') || 0;
-    const btn = document.getElementById('counterBtn');
-    btn.textContent = `Count: ${count}`;
+    let count = parseInt(localStorage.getItem('mantra_count') || "0", 10);
+    const counterBtn = document.getElementById('counterBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const holdDurationMs = 1200; // ✅ You can configure this value
+
+    counterBtn.textContent = `Count: ${count}`;
 
     function playBeep() {
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -46,17 +62,54 @@
       setTimeout(() => osc.stop(), 150);
     }
 
-    btn.addEventListener('click', () => {
+    counterBtn.addEventListener('click', () => {
       count++;
       localStorage.setItem('mantra_count', count);
-      btn.textContent = `Count: ${count}`;
-      btn.classList.add('flash');
-      setTimeout(() => btn.classList.remove('flash'), 2000);
+      counterBtn.textContent = `Count: ${count}`;
+      counterBtn.classList.add('flash');
+      setTimeout(() => counterBtn.classList.remove('flash'), 2000);
       navigator.vibrate(2000);
       playBeep();
     });
 
-    // Register PWA
+    // Long press reset logic
+    let pressTimer = null;
+
+    resetBtn.addEventListener('mousedown', () => {
+      pressTimer = setTimeout(() => {
+        const confirmReset = confirm("Are you sure you want to reset?");
+        if (confirmReset) {
+          count = 0;
+          localStorage.setItem('mantra_count', count);
+          counterBtn.textContent = `Count: ${count}`;
+        }
+      }, holdDurationMs);
+    });
+
+    resetBtn.addEventListener('mouseup', () => {
+      clearTimeout(pressTimer);
+    });
+    resetBtn.addEventListener('mouseleave', () => {
+      clearTimeout(pressTimer);
+    });
+
+    // For mobile touch
+    resetBtn.addEventListener('touchstart', () => {
+      pressTimer = setTimeout(() => {
+        const confirmReset = confirm("Are you sure you want to reset?");
+        if (confirmReset) {
+          count = 0;
+          localStorage.setItem('mantra_count', count);
+          counterBtn.textContent = `Count: ${count}`;
+        }
+      }, holdDurationMs);
+    });
+
+    resetBtn.addEventListener('touchend', () => {
+      clearTimeout(pressTimer);
+    });
+
+    // Register service worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js');
     }
