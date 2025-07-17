@@ -40,13 +40,12 @@
 </head>
 <body>
   <button id="counterBtn">Count: 0</button>
-  <button id="resetBtn">Long Press to Reset</button>
+  <button id="resetBtn">Reset</button>
 
   <script>
     let count = parseInt(localStorage.getItem('mantra_count') || "0", 10);
     const counterBtn = document.getElementById('counterBtn');
     const resetBtn = document.getElementById('resetBtn');
-    const holdDurationMs = 1200; // ✅ You can configure this value
 
     counterBtn.textContent = `Count: ${count}`;
 
@@ -72,44 +71,15 @@
       playBeep();
     });
 
-    // Long press reset logic
-    let pressTimer = null;
-
-    resetBtn.addEventListener('mousedown', () => {
-      pressTimer = setTimeout(() => {
-        const confirmReset = confirm("Are you sure you want to reset?");
-        if (confirmReset) {
-          count = 0;
-          localStorage.setItem('mantra_count', count);
-          counterBtn.textContent = `Count: ${count}`;
-        }
-      }, holdDurationMs);
+    resetBtn.addEventListener('click', () => {
+      const confirmReset = confirm("Are you sure you want to reset?");
+      if (confirmReset) {
+        count = 0;
+        localStorage.setItem('mantra_count', count);
+        counterBtn.textContent = `Count: ${count}`;
+      }
     });
 
-    resetBtn.addEventListener('mouseup', () => {
-      clearTimeout(pressTimer);
-    });
-    resetBtn.addEventListener('mouseleave', () => {
-      clearTimeout(pressTimer);
-    });
-
-    // For mobile touch
-    resetBtn.addEventListener('touchstart', () => {
-      pressTimer = setTimeout(() => {
-        const confirmReset = confirm("Are you sure you want to reset?");
-        if (confirmReset) {
-          count = 0;
-          localStorage.setItem('mantra_count', count);
-          counterBtn.textContent = `Count: ${count}`;
-        }
-      }, holdDurationMs);
-    });
-
-    resetBtn.addEventListener('touchend', () => {
-      clearTimeout(pressTimer);
-    });
-
-    // Register service worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js');
     }
