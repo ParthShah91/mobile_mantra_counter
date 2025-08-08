@@ -15,7 +15,7 @@
       font-family: sans-serif;
     }
     #counterBtn {
-      flex: 1; /* Fill available vertical space */
+      flex: 1; /* fills all remaining space */
       width: 100%;
       font-size: 48px;
       background: #4CAF50;
@@ -24,13 +24,16 @@
       transition: background 0.3s;
     }
     #resetBtn {
-      flex: 0; /* Don't grow */
+      flex: 0; /* do not grow */
       width: 100%;
       font-size: 12px;
       background: #f44336;
       color: white;
       border: none;
-      padding: 4px;
+      padding: 2px 0;  /* small padding */
+      height: auto;    /* let content decide height */
+      min-height: unset; /* remove default min height */
+      align-self: center; /* prevent flex stretch */
     }
     .flash {
       background: #FF9800 !important;
